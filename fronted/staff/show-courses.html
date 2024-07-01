@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>show courses</title>
+</head>
+<body>
+    <center>
+    <table width="75%" border="1" style="border-collapse: collapse;text-align: center;">
+        <tr>
+            <td>Course</td>
+            <td>
+              <input type="text" id="txtCourse" />
+            </td>
+          </tr>
+          <tr>
+            <td>Description</td>
+            <td>
+              <input type="text" id="txtDes" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><button onclick="add()">ADD Course</button></td>
+          </tr>
+    </table>
+    </center> <br> <br>
+    <center>
+    <table width="75%" border="1" style="border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      </center>
+
+      <script>
+        function add()
+        {
+          var course=document.getElementById("txtCourse").value;
+          var description=document.getElementById("txtDes").value;
+          var token=localStorage.getItem("token");
+
+          fetch("http://127.0.0.1:5000/admin/showcourse", {
+            
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token" + token ,
+                  
+                },
+                body: JSON.stringify({
+                  course,description
+                }),
+              })
+              .then((response) => response.json());
+              alert("Added successfully");
+
+              
+        }
+      </script>
+</body>
+</html>
