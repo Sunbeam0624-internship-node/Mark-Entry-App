@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Form</title>
@@ -26,7 +23,7 @@
     </style>
 </head>
 <body>
-  <div id="navbar-container"></div>
+    <div id="navbar-container"></div>
     <div class="container">
       <div class="login-container card shadow">
         <div class="card-body">
@@ -36,7 +33,6 @@
               <label for="email">Email address</label>
               <input
                 type="email"
-    
                 class="form-control"
                 id="email"
                 placeholder="Enter email"
@@ -84,7 +80,7 @@
           });
           $("#StaffloginForm").submit(function (event) {
             event.preventDefault();
-  
+            
             // Get form elements
             const email = $("#email");
             const password = $("#password");
@@ -150,15 +146,13 @@
                       case "staff":
                         window.location.href = "staff/staff-home.html";
                         break;
-                      
-                        case "admin":
-                        window.location.href = "admin/admin-home.html";
-                        break;
-
-                        default:
+                      case "admin":
+                          window.location.href = "staff/admin-home.html";
+                          break;
+                      default:
                         window.location.href = "home.html";
                         break;
-                     }
+                    }
                   }
                 })
                 .catch((error) => {
@@ -174,6 +168,6 @@
             return re.test(email);
           }
         });
-      </script>
+      </script>  
 </body>
 </html>
