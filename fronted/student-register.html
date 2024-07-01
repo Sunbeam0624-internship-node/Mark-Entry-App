@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Form</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+    <style>
+      .login-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+      }
+    </style>
+</head>
+<body>
+    <div id="navbar-container"></div>
+    <div class="container">
+      <div class="login-container card shadow">
+        <div class="card-body">
+          <h3 class="card-title text-center">Student Registration</h3>
+          <form id="StudentRegisterForm">
+            <div class="form-group">
+                <label for="rollNo">Roll No.</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="rollNo"
+                  placeholder="Enter Roll No"
+                />
+                <div class="invalid-feedback">
+                  Please enter a valid Roll No.
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="studentName">Student Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="studentName"
+                  placeholder="Enter Name"
+                />
+                <div class="invalid-feedback">
+                  Please enter a valid Name.
+                </div>
+              </div>
+
+            <div class="form-group">
+              <label for="email">Email address</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder="Enter email"
+              />
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+              />
+              <div class="invalid-feedback">
+                Password must be at least 6 characters long.
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mb-2">
+                Submit
+              </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script>
+        $(document).ready(function () {
+          $("#navbar-container").load("navbars/navbar.html", function () {
+            // Set the text color of navbar items to white
+            $("#navbarNav .nav-link").css("color", "#6c757d");
+            $(".navbar-brand").css("color", "white");
+          });
+          $("#StudentRegisterForm").submit(function (event) {
+          event.preventDefault();
+
+          // Get form elements
+          const rollNo = $("#rollNo");
+          const studentName = $("#studentName"); 
+          const email = $("#email");
+          const password = $("#password");
+          console.log(rollNo);
+          console.log(studentName);
+
+          // Initialize validation flag
+          let valid = true;
+
+          // Email validation
+          if (!validateEmail(email.val())) {
+            email.addClass("is-invalid");
+            valid = false;
+          } else {
+            email.removeClass("is-invalid").addClass("is-valid");
+          }
+
+          // Password validation
+          if (password.val().length < 1) {
+            password.addClass("is-invalid");
+            valid = false;
+          } else {
+            password.removeClass("is-invalid").addClass("is-valid");
+          }
+
+          if (valid) {
+            // If form is valid, send data to the backend
+            fetch("http://127.0.0.1:5000/student/register", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                rollNo: rollNo.val(),
+                studentName: studentName.val(),
+                email: email.val(),
+                password: password.val(),
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log("Response from server for login", data);
+                if (data.error) {
+                  // Check for specific error messages and display appropriate toastr messages
+                  if (data.error === "Invalid email") {
+                    toastr.error("Invalid email!");
+                  } else if (data.error === "Invalid password") {
+                    toastr.error("Invalid password!");
+                  } else {
+                    toastr.error(data.error);
+                  }
+                }else{
+                    window.location.href = "student-login.html";
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                toastr.error("Login failed!");
+              });
+          }
+        });
+
+        function validateEmail(email) {
+          // email validation regex
+          const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return re.test(email);
+        }
+        });
+    </script>    
+</body>
+</html>
