@@ -40,8 +40,8 @@
       <script>
         function add()
         {
-          var course=document.getElementById("txtCourse").value;
-          var description=document.getElementById("txtDes").value;
+          var course=document.getElementById("txtCourse");
+          var description=document.getElementById("txtDes");
           var token=localStorage.getItem("token");
 
           fetch("http://127.0.0.1:5000/admin/showcourse", {
@@ -49,18 +49,19 @@
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  "authorization" : "Token" + token ,
+                  "authorization" : "Token " + token,
                   
                 },
                 body: JSON.stringify({
-                  course,description
+                  course: course.value,
+                  description: description.value,
                 }),
               })
               .then((response) => response.json());
-              alert("Added successfully");
+              
 
               
-        }
+}
       </script>
 </body>
 </html>
