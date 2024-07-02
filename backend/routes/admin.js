@@ -47,4 +47,16 @@ const verifyToken = (request, response, next) => {
       }
     );
   });
+
+  router.get("/showcourse", authorizeRole(["admin"]) , (request , response) => {
+    console.log("*: INside show course");
+    const statement = `SELECT course_name , description FROM courses`; 
+    console.log("statement:",statement);
+    db.execute(
+      statement,
+      (error, result) => {
+        response.send(utils.createResponse(error, result));
+      }
+    );
+  });
   module.exports = router;
