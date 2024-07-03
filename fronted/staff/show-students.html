@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>show students</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+</head>
+<body>
+    <br> <br>
+    <center>
+        <table border="1" width="75%" style="text-align: center;border-collapse: collapse;" >
+            <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Student Name</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </center>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script>
+        function getdata()
+      {
+        var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/coordinator/showstudent", {
+          method: "GET",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+        })
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tableBody");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside get course for loop");
+              var user = data2.data[i];
+              //console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.roll_number}</td>
+                                    <td>${user.student_name}</td>
+                                    <td>${user.email}</td>
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+    
+        });
+    }
+    getdata();
+    </script>
+</body>
+</html>
