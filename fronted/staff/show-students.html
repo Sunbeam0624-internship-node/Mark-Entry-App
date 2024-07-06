@@ -14,33 +14,46 @@
     />
 </head>
 <body>
+  <center>
+  <div>
+    <br>
+    <table>
+      <tr>
+        <td>Roll No</td>
+        <td >
+          <input type="number" id="rollno">
+        </td>
+      </tr>
+      <tr>
+        <td>Student Name</td>
+        <td><input type="text" id="studentname"></td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>
+          <input type="email" id="email">
+        </td>
+      </tr>
+      <tr>
+        <td>Group Name</td>
+        <td>
+          <input type="text" id="groupname">
+        </td>
+      </tr>
+      <tr>
+        
+        <td colspan="2">
+          <center>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button type="submit" class="btn btn-primary" onclick="Add()" id="btnAdd">Add</button>
+        </center>
+        </td>
+        
+      </tr>
+    </table>
+  </div>
+  </center>
     <br> <br>
-    <center>
-    <div>
-      <table style="text-align: center;">
-        <tr>
-          <td>Roll No</td>
-          <td><input type="number" id="rolNo"></td>
-        </tr>
-        <tr>
-          <td>Student Name</td>
-          <td><input type="text" id="studentName"></td>
-        </tr>
-        <tr>
-          <td>Email</td>
-          <td><input type="email" id="email"></td>
-        </tr>
-        <tr>
-          <td>Group Name</td>
-          <td><input type="text" id="groupName"></td>
-        </tr>
-        <tr>
-          
-          <td colspan="2"><button id="btnAdd" onclick="Add()" style="width: 200px;">Add</button></td>
-        </tr>
-      </table>
-    </div>
-    </center>
     <center>
         <table border="1" width="75%" style="text-align: center;border-collapse: collapse;" >
             <thead>
@@ -48,26 +61,26 @@
                 <th>Roll No</th>
                 <th>Student Name</th>
                 <th>Email</th>
-                <th>group Name</th>
+                <th>Group Name</th>
                 <th>Action</th>
-          
-            </tr>
+                
+
+              </tr>
             </thead>
-            <tbody id="tableBody">
-              
-            </tbody>
+            <tbody id="tableBody"></tbody>
         </table>
     </center>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script>
+      
       function add()
         {
-          var rolNo=document.getElementById("rolNo");
-          var studentName=document.getElementById("studentName");
+          var rollno=document.getElementById("rollno");
+          var studentname=document.getElementById("studentname");
           var email=document.getElementById("email");
-          var groupName=document.getElementById("groupName");
+          var groupname=document.getElementById("groupname");
           var token=localStorage.getItem("token");
 
           fetch("http://127.0.0.1:5000/coordinator/updateStudent", {
@@ -79,10 +92,10 @@
                   
                 },
                 body: JSON.stringify({
-                  rolNo: rolNo.value,
-                  studentName: studentName.value,
+                  rollno: rollno.value,
+                  studentname: studentname.value,
                   email: email.value,
-                  groupName: groupName.value,
+                  groupname: groupname.value,
                 }),
               })
               .then((response) => response.json())
@@ -102,10 +115,10 @@
     {
       console.log("# ",No);
       let roll=No;
-      var rolNo=document.getElementById("rolNo");
-      var studentName=document.getElementById("studentName");
+      var rollno=document.getElementById("rollno");
+      var studentname=document.getElementById("studentname");
       var email=document.getElementById("email");
-      var groupName=document.getElementById("groupName");
+      var groupname=document.getElementById("groupname");
       var token=localStorage.getItem("token");
         fetch("http://127.0.0.1:5000/coordinator/getstudent" ,{
           method: "POST",
@@ -127,14 +140,15 @@
          // console.log("data1 ",data1);
           const data2=data;
           console.log("data2: ",data2.data[0].group_id);
-          rolNo.value=data2.data[0].roll_number;
-          studentName.value=data2.data[0].student_name;
+          rollno.value=data2.data[0].roll_number;
+          studentname.value=data2.data[0].student_name;
           email.value=data2.data[0].email;
-          groupName.value=data2.data[0].group_id;
+          groupname.value=data2.data[0].group_id;
 
     
         });
     }
+      
         function getdata()
       {
         var token=localStorage.getItem("token");
@@ -144,7 +158,6 @@
                   "Content-Type": "application/json",
                   "authorization" : "Token " + token,
                   },
-                  
         })
         .then((response) => response.json())
         .then((data)=> {
@@ -160,14 +173,14 @@
             for (let i = 0; i < data2.data.length; i++) {
               console.log("Inside get course for loop");
               var user = data2.data[i];
-              console.log("user:",user);
+              //console.log("user:",user);
               var row = `<tr>
                                     <td>${user.roll_number}</td>
                                     <td>${user.student_name}</td>
                                     <td>${user.email}</td>
-                                    <td>${user.name}</td>
+                                    <td>${user.group_id}</td>
                                     <td>
-                                       <button onclick="Edit(${user.roll_number})" class="btn btn-warning">
+                                       <button onclick="Edit(${user.roll_number})" class="btn btn-primary">
                                         Update
                                        </button>
                                     </td>
@@ -179,8 +192,6 @@
     
         });
     }
-
-    
     getdata();
     </script>
 </body>
