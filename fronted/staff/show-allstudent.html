@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show All Student</title>
+    <link
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+  />
+  
+</head>
+<body>
+    <center><h1>All Students</h1></center>
+    <div class="container">
+    <div class="login-container card shadow">
+    <div class="card-body">
+    <center>
+        <table border="1" style="width: 75%;text-align: center;border-collapse: collapse;">
+            <thead>
+            <tr>
+                <th>Roll Number</th>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Add To Course</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>
+    </center>
+    </div>
+    </div>
+    </div> <br> <br>
+    <div class="container">
+    <div class="login-container card shadow">
+    <div class="card-body">
+        <center>
+            <table style="width: 75%;">
+                <tr>
+                    <td>Roll Number:</td>
+                    <td>
+                        <input type="number" id="rolNo">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Student Name:</td>
+                    <td>
+                        <input type="text" id="studentName">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td>
+                        <input type="email" id="email">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Course:</td>
+                    <td>
+                        <input type="text" id="course1">
+                    </td>
+                </tr>
+                <tr>
+          
+                    <td colspan="2"><button id="btnAdd" onclick="update()" style="width: 200px;" class="btn btn-primary btn-block mb-2">UPDATE</button></td>
+                  </tr>
+            </table>
+        </center>
+    </div>
+    </div>
+    </div> <br> <br>
+    <div class="container">
+    <div class="login-container card shadow">
+    <div class="card-body">
+    <center>
+        <h2>Show Students Of Selected Course</h2>
+        <table style="width: 75%">
+            <tr>
+                <td colspan="3">select course name:</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <select name="course" id="course">
+                        <option value="DAC">DAC</option>
+                        <option value="DMC">DMC</option>
+                        <option value="DBDA">DBDA</option>
+                    </select>
+                </td>
+                <td>
+                    <button style="margin-left: 700px; width: 200px;" class="btn btn-primary btn-block mb-2" onclick="getdata()">show students</button>
+                </td>
+            </tr>
+        </table>
+    </center>
+    </div>
+    </div>
+    </div>
+    <script>
+    
+    function getdata()
+      {
+        var course=document.getElementById("course");
+        var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/showallstudent", {
+          method: "POST",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+                  body: JSON.stringify({
+                  course: course.value,
+                }),
+        })
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tableBody");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside show all students for loop");
+              var user = data2.data[i];
+              console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.roll_number}</td>
+                                    <td>${user.student_name}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.course_name}</td>
+                                    <td>
+                                       <button onclick="Edit(${user.roll_number})" class="btn btn-warning">
+                                        Edit
+                                       </button>
+                                    </td>
+
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+        });
+    }
+    function Edit(No)
+    {
+      console.log("# ",No);
+      let roll=No;
+      var rolNo=document.getElementById("rolNo");
+      var studentName=document.getElementById("studentName");
+      var email=document.getElementById("email");
+      var course1=document.getElementById("course1");
+      var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/getstudent" ,{
+          method: "POST",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+                  body: JSON.stringify({
+                    rollNo: roll,
+                  
+                }),
+                  
+        })
+
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2: ",data2.data[0].group_id);
+          rolNo.value=data2.data[0].roll_number;
+          studentName.value=data2.data[0].student_name;
+          email.value=data2.data[0].email;
+          course1.value=data2.data[0].course_name;
+
+    
+        });
+    }
+    function update()
+        {
+          
+          var token=localStorage.getItem("token");
+
+          fetch("http://127.0.0.1:5000/admin/updateStudent", {
+            
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  
+                },
+                body: JSON.stringify({
+                  rolNo: rolNo.value,
+                  studentName: studentName.value,
+                  email: email.value,
+                  course1: course1.value,
+                }),
+              })
+              .then((response) => response.json())
+              .then((data)=> {
+                
+                const data2=data;
+                console.log("data2:",data2);
+                if(data2.data.affectedRows>0) {
+                alert("record added successfully");
+                getdata();
+              } else{
+                alert("something went wrong");
+              }
+              });             
+}
+    </script>
+</body>
+</html>
