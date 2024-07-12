@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Groups</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+</head>
+<body>
+    <center>
+        <h1>Show All Groups</h1> 
+        <div class="container">
+        <div class="login-container card shadow">
+        <div class="card-body">
+        <table width="75%">
+            <tr>
+                <td>select course:</td>
+                <td>
+                   <select name="course" id="course" style="width: 400px;">
+                        <option value="DAC">DAC</option>
+                        <option value="DMC">DMC</option>
+                        <option value="DBDA">DBDA</option>
+                   </select> 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button style="margin-left: 150px; width: 250px;" onclick="getdata()" class="btn btn-primary btn-block mb-2">show groups</button>
+                </td>
+            </tr>
+        </table>
+        </div>
+        </div>
+        </div>
+        <br>
+        <div class="container">
+        <div class="login-container card shadow">
+        <div class="card-body">
+        <h1>Groups</h1>
+        <table style="width: 75%;">
+            <thead>
+                <tr>
+                    <td><b>Group Name</b></td>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>
+        <hr>
+        <table style="width: 75%;">
+            <tr>
+                <td>Add Group</td>
+                <td>
+                    <input type="text" id="group" style="width: 350px;">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button onclick="add()" class="btn btn-primary btn-block mb-2" style="width: 180px;margin-left: 100px;">Add</button>
+                </td>
+            </tr>
+        </table>
+        </div>
+        </div>
+        </div>
+    </center>
+    <script>
+        function getdata()
+        {
+            var course=document.getElementById("course");
+        var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/showallgroups" ,{
+          method: "POST",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+                  body: JSON.stringify({
+                    course: course.value,
+                   
+                }),
+                  
+        })
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tableBody");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside get course for loop");
+              var user = data2.data[i];
+              //console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.group_name}</td>
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+    
+        });
+}
+    function add()
+    {
+        var course=document.getElementById("course");
+      var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/addgroup" ,{
+          method: "POST",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+                  body: JSON.stringify({
+                    course: course.value,
+                    group: group.value,
+                  
+                  
+                }),
+                  
+        })
+        .then((response) => response.json())
+              .then((data)=> {
+                
+                const data2=data;
+                console.log("data2:",data2);
+                if(data2.data.affectedRows>0) {
+                alert("record added successfully");
+                getdata();
+              } else{
+                alert("something went wrong");
+              }
+              });
+}
+    
+      getdata();  
+    </script>
+</body>
+</html>

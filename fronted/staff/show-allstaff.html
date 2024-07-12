@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>show all staff</title>
+    <link
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+  />
+  
+</head>
+<body>
+    <center>
+        <h1>All Staffs</h1>
+        <div class="container">
+        <div class="login-container card shadow">
+        <div class="card-body">
+        <table border="1" style="border-collapse: collapse;text-align: center;width: 75%;">
+            <thead>
+                <th>Employee Id</th>
+                <th>Staff Name</th>
+                <th>Email</th>
+                <th>Course Name</th>
+                <th>Role</th>
+            </thead>
+            <tbody id="tablebody">
+
+            </tbody>
+        </table>
+        </div>
+        </div>
+        </div>
+    </center> <br>
+    <center>
+        <div class="container">
+        <div class="login-container card shadow">
+        <div class="card-body">
+        <h2>update staff details</h2>
+        <table style="width: 50%;">
+            <tr>
+                <td>Email address:</td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="email" placeholder="enter a email" id="email" style="width: 75%;">
+                </td>
+            </tr>
+            <tr>
+                <td>select course:</td>
+            </tr>
+            <tr>
+                <td>
+                    <select name="course" id="course" style="width: 75%;">
+                        <option value="DAC">DAC</option>
+                        <option value="DMC">DMC</option>
+                        <option value="DBDA">DBDA</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>select role:</td>
+            </tr>
+            <tr>
+                <td>
+                    <select name="role" id="role" style="width: 75%;">
+                        <option value="staff">staff</option>
+                        <option value="coordinator">coordinator</option>
+                        <option value="admin">admin</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button onclick="update()" class="btn btn-primary btn-block mb-2" style="width: 100px;">Update</button>
+                </td>
+            </tr>
+        </table>
+        </div>
+        </div>
+        </div>
+    </center>
+    
+<script>
+    function getdata()
+    {
+        var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/showallstaff", {
+          method: "GET",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+        })
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tablebody");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside show all staff for loop");
+              var user = data2.data[i];
+              console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.employee_number}</td>
+                                    <td>${user.staff_name}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.course_name}</td>
+                                    <td>${user.role}</td>
+
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+        });
+    }
+    function update()
+    {
+        var token=localStorage.getItem("token");
+        var email=document.getElementById("email");
+        var course=document.getElementById("course");
+        var role=document.getElementById("role");
+
+
+          fetch("http://127.0.0.1:5000/admin/updateStaff", {
+            
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  
+                },
+                body: JSON.stringify({
+                  email: email.value,
+                  course: course.value,
+                  role: role.value,
+                }),
+              })
+              .then((response) => response.json())
+              .then((data)=> {
+                
+                const data2=data;
+                console.log("data2:",data2);
+                if(data2.data.affectedRows>0) {
+                alert("record added successfully");
+                getdata();
+              } else{
+                alert("something went wrong");
+              }
+              });
+    }
+    getdata();
+</script>
+</body>
+</html>
