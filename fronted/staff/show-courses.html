@@ -13,6 +13,15 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
     />
+    <style>
+      .login-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+      }
+    </style>
 </head>
 <body>
   <div id="navbar-container"></div> <br> <br>
@@ -39,7 +48,7 @@
           <tr> </tr>
           <div class="form-group">
           <tr>
-            <td colspan="2"><button onclick="add()" class="btn btn-primary btn-block mb-2" style="height: 40px;width: 150px;margin-left: 150px;">ADD Course</button></td>
+            <td colspan="2"><button onclick="add()" class="btn btn-primary btn-block mb-2" style="height: 40px;width: 70px;margin-left: 150px;">ADD Course</button></td>
           </tr>
     </table>
     </center>
@@ -68,91 +77,221 @@
       </center>
     </div>
     </div>
+    </div> <br>
+    <div class="container">
+    <div class="login-container card shadow">
+    <div class="card-body">
+    <center>
+      <table style="width: 75%;">
+        <tr>
+          <td>select course:</td>
+          <td>
+            <select name="course" id="course" style="width:200px;">
+              <option value="DAC">DAC</option>
+              <option value="DMC">DMC</option>
+              <option value="DBDA">DBDA</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button  onclick="showsubject()" class="btn btn-primary btn-block mb-2" style="width: 190px;" >show subjects</button>
+          </td>
+        </tr>
+      </table>
+    </center>
     </div>
+    </div>
+    </div>
+    <br>
+    <div class="container">
+      <div class="login-container card shadow">
+      <div class="card-body">
+    <center>
+      <h1>Subjects</h1>
+      <table style="width: 75%;text-align: center;">
+        <thead>
+          <th>subject name</th>
+        </thead>
+        <tbody id="tableBody1">
+          
+        </tbody>
+      </table>
+      <table style="width: 75%;">
+        <tr>
+          <td>Add Subject:</td>
+          <td>
+            <input type="text" id="subject1">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button onclick="add1()" class="btn btn-primary btn-block mb-2" style="width: 75%;">Add</button>
+          </td>
+        </tr>
+      </table>
+    </center>
+      </div>
+      </div>
+    </div>
+    
+    
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-    <script>
-      $(function () {
-            $(document).ready(function () {
-                $("#navbar-container").load("../navbars/admin-navbar.html",function () {
-                  // Set the text color of navbar items to white
-                  $("#navbarNav .nav-link").css("color", "#6c757d");
-                  $(".navbar-brand").css("color", "white");
-                });
-            });
+      <script>
+$(function () {
+      $(document).ready(function () {
+          $("#navbar-container").load("../navbars/admin-navbar.html",function () {
+            // Set the text color of navbar items to white
+            $("#navbarNav .nav-link").css("color", "#6c757d");
+            $(".navbar-brand").css("color", "white");
           });
-            function getdata()
-            {
-              var token=localStorage.getItem("token");
-              fetch("http://127.0.0.1:5000/admin/showcourse", {
-                method: "GET",
+      });
+    });
+      function getdata()
+      {
+        var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/showcourse", {
+          method: "GET",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+        })
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tableBody");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside get course for loop");
+              var user = data2.data[i];
+              //console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.course_name}</td>
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+    
+        });
+      
+      }
+        function add()
+        {
+          var course=document.getElementById("txtCourse");
+          var description=document.getElementById("txtDes");
+          var token=localStorage.getItem("token");
+
+          fetch("http://127.0.0.1:5000/admin/showcourse", {
+            
+                method: "POST",
                 headers: {
-                        "Content-Type": "application/json",
-                        "authorization" : "Token " + token,
-                        },
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  
+                },
+                body: JSON.stringify({
+                  course: course.value,
+                  description: description.value,
+                }),
               })
               .then((response) => response.json())
               .then((data)=> {
-               // console.log("data:",data);
-                //const data1=data.json();
-               // console.log("data1 ",data1);
+                
                 const data2=data;
-                console.log("data2 ",data2);
-                console.log("data2 length is:",data2.data.length);
-                var refToMyTable = document.getElementById("tableBody");
-                  //refToMyTable.innerHTML = users;
-                  refToMyTable.innerHTML='';
-                  for (let i = 0; i < data2.data.length; i++) {
-                    console.log("Inside get course for loop");
-                    var user = data2.data[i];
-                    //console.log("user:",user);
-                    var row = `<tr>
-                                          <td>${user.course_name}</td>
-                              </tr>`;
-                    refToMyTable.innerHTML = refToMyTable.innerHTML + row;
-                    
-                            }
-          
+                console.log("data2:",data2);
+                if(data2.data.affectedRows>0) {
+                alert("record added successfully");
+                getdata();
+              } else{
+                alert("something went wrong");
+              }
               });
-            
-            }
-              function add()
-              {
-                var course=document.getElementById("txtCourse");
-                var description=document.getElementById("txtDes");
-                var token=localStorage.getItem("token");
-      
-                fetch("http://127.0.0.1:5000/admin/showcourse", {
+              
+
+              
+}
+function showsubject()
+{
+  var course=document.getElementById("course");
+      var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/showsubject" ,{
+          method: "POST",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+                  body: JSON.stringify({
+                    course: course.value,
                   
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        "authorization" : "Token " + token,
-                        
-                      },
-                      body: JSON.stringify({
-                        course: course.value,
-                        description: description.value,
-                      }),
-                    })
-                    .then((response) => response.json())
-                    .then((data)=> {
-                      
-                      const data2=data;
-                      console.log("data2:",data2);
-                      if(data2.data.affectedRows>0) {
-                      alert("record added successfully");
-                      getdata();
-                    } else{
-                      alert("something went wrong");
-                    }
-                    });
-                    
-      
-                    
-      }
-           getdata();
-            </script>
+                }),
+                  
+        })
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tableBody1");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside get course for loop");
+              var user = data2.data[i];
+              //console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.subject_name}</td>
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+    
+        });
+}
+
+function add1()
+{
+  var course=document.getElementById("course");
+  var subject1=document.getElementById("subject1");
+      var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/admin/addsubject" ,{
+          method: "POST",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+                  body: JSON.stringify({
+                    course: course.value,
+                    subject1: subject1.value,
+                  
+                }),
+                  
+        })
+        .then((response) => response.json())
+              .then((data)=> {
+                
+                const data2=data;
+                console.log("data2:",data2);
+                if(data2.data.affectedRows>0) {
+                alert("record added successfully");
+                showsubject();
+              } else{
+                alert("something went wrong");
+              }
+              });
+}
+   getdata();
+      </script>
 </body>
 </html>
