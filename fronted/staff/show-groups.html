@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>show groups</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+    <style>
+        .login-container {
+          max-width: 400px;
+          margin: 50px auto;
+          padding: 20px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+        }
+      </style>
+</head>
+<body>
+  <div id="navbar-container"></div> <br> <br>
+  <div class="container">
+  <div class="login-container card shadow">
+  <div class="card-body">
+    <center>
+    <table  style="text-align:center">
+      <div class="form-group">
+        <tr>
+            <td>Group Name</td>
+            <td>
+              <input type="text" id="txtgroup" />
+            </td>
+            <td colspan="2"><button onclick="add()" class="btn btn-primary btn-block mb-2" style="width: 100%; margin-left: 40%; ">ADD</button></td>
+          </tr>
+      </div>
+    </table>
+    </center>
+  </div>
+  </div>
+  </div>
+    
+    <div class="container">
+    <div class="login-container card shadow">
+    <div class="card-body">
+    <center>
+    <table width="75%"  style="text-align: center;">
+      <div class="form-group">
+        <thead>
+          
+          <tr>
+            <th>Group</th>
+          </tr>
+          
+        </thead>
+        </div>
+        <div class="form-group">
+        <tbody id="tableBody"></tbody>
+        </div>
+      </table>
+      </center>
+    </div>
+    </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+      <script>
+$(function () {
+      $(document).ready(function () {
+          $("#navbar-container").load("../navbars/admin-navbar.html",function () {
+            // Set the text color of navbar items to white
+            $("#navbarNav .nav-link").css("color", "#6c757d");
+            $(".navbar-brand").css("color", "white");
+          });
+      });
+    });
+      function getdata()
+      {
+        var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/coordinator/show-groups", {
+          method: "GET",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+        })
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tableBody");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside get course for loop");
+              var user = data2.data[i];
+              //console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.group_name}</td>
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+    
+        });
+      
+      }
+        function add()
+        {
+          var groupName=document.getElementById("txtgroup");
+          
+          var token=localStorage.getItem("token");
+
+          fetch("http://127.0.0.1:5000/coordinator/add-groups", {
+            
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  
+                },
+                body: JSON.stringify({
+                    groupName: groupName.value,
+                  
+                }),
+              })
+              .then((response) => response.json())
+              .then((data)=> {
+                
+                const data2=data;
+                console.log("data2:",data2);
+                if(data2.data.affectedRows>0) {
+                alert("record added successfully");
+                getdata();
+              } else{
+                alert("something went wrong");
+              }
+              });
+              
+
+              
+}
+     getdata();
+      </script>
+</body>
+</html>
