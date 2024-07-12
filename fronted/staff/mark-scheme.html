@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mark Scheme</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+    
+</head>
+<body>
+    <br>
+    <div class="container">
+    <div class="login-container card shadow">
+    <div class="card-body">
+    <center><h2>Show All Mark Scheme</h2></center>
+    <center>
+        <table width="75%" border="1" style="border-collapse: collapse;text-align: center;">
+            <thead>
+                <th>Subject Name</th>
+                <th>Theory</th>
+                <th>Lab</th>
+                <th>IA1</th>
+                <th>IA2</th>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        
+        </table>
+    </center>
+    </div>
+    </div>
+    </div>  <br> <br>
+    <div class="container">
+    <div class="login-container card shadow">
+    <div class="card-body">
+    <center>
+        <table width="50%" style="text-align: center;">
+            <tr>
+                <td colspan="2">
+                    <h2>Add Marks To Subject</h2>
+                </td>
+            </tr>
+            <tr>    
+                <td colspan="2">
+                    <select name="Subject" style="width: 100%;" id="Subject">
+                        <option value="java">java</option>
+                        <option value="data structure">data structures</option>
+                        <option value="computer network">computer network</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>Theory marks</span>
+                </td>
+                <td>
+                    <span>Lab marks</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="number" placeholder="0" id="theoryMark" style="width: 100%;">
+                </td>
+                <td>
+                    <input type="number" placeholder="0" id="labMark" style="width: 100%;margin-left: 8px;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>IA1 marks</span>
+                </td>
+                <td>
+                    <span>IA2 marks</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="number" placeholder="0" id="ia1Mark" style="width: 100%;">
+                </td>
+                <td>
+                    <input type="number" placeholder="0" id="ia2Mark" style="width: 100%;margin-left: 8px;">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button onclick="add()">save</button>
+                </td>
+            </tr>
+        </table>
+    </center>
+    </div>
+    </div>
+    </div>
+    <script>
+        function getdata()
+        {
+        var token=localStorage.getItem("token");
+        fetch("http://127.0.0.1:5000/coordinator/markscheme", {
+          method: "GET",
+          headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  },
+                  
+        })
+
+        .then((response) => response.json())
+        .then((data)=> {
+         // console.log("data:",data);
+          //const data1=data.json();
+         // console.log("data1 ",data1);
+          const data2=data;
+          console.log("data2 ",data2);
+          console.log("data2 length is:",data2.data.length);
+          var refToMyTable = document.getElementById("tableBody");
+            //refToMyTable.innerHTML = users;
+            refToMyTable.innerHTML='';
+            for (let i = 0; i < data2.data.length; i++) {
+              console.log("Inside mark scheme for loop");
+              var user = data2.data[i];
+              console.log("user:",user);
+              var row = `<tr>
+                                    <td>${user.subject_name}</td>
+                                    <td>${user.theory_weightage}</td>
+                                    <td>${user.lab_weightage}</td>
+                                    <td>${user.ia1_weightage}</td>
+                                    <td>${user.ia2_weightage}</td>
+                                    
+
+                        </tr>`;
+              refToMyTable.innerHTML = refToMyTable.innerHTML + row;
+              
+                      }
+                    });
+        }
+        function add()
+        {
+          var Subject=document.getElementById("Subject");
+          var theoryMark=document.getElementById("theoryMark");
+          var labMark=document.getElementById("labMark");
+          var ia1Mark=document.getElementById("ia1Mark");
+          var ia2Mark=document.getElementById("ia2Mark");
+          var token=localStorage.getItem("token");
+
+          fetch("http://127.0.0.1:5000/coordinator/addmark", {
+            
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "authorization" : "Token " + token,
+                  
+                },
+                body: JSON.stringify({
+                    Subject: Subject.value,
+                    theoryMark: theoryMark.value,
+                    labMark: labMark.value,
+                    ia1Mark: ia1Mark.value,
+                    ia2Mark: ia2Mark.value,
+                }),
+              })
+              .then((response) => response.json())
+              .then((data)=> {
+                
+                const data2=data;
+                console.log("data2:",data2);
+                if(data2.data.affectedRows>0) {
+                alert("record added successfully");
+                getdata();
+              } else{
+                alert("something went wrong");
+              }
+              });
+              
+
+              
+}
+        getdata();
+
+    </script>
+</body>
+</html>
